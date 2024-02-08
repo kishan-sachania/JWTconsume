@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model JWTconsume.Models.Login;
+@using (Html.BeginForm("Insert", "Home", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Default form</h4>
+
+                   
+                    <div>@Html.LabelFor(model=>model.Username)</div>
+                    <div>@Html.TextBoxFor(model=>model.Username,new { @class = "form-control " })</div>
+                    <div>@Html.LabelFor(model=>model.Password)</div>
+                    <div> @Html.TextBoxFor(model=>model.Password,new { @class = "form-control " })</div>
+                    
+
+                    <div>
+                        <button type="submit" class="btn btn-outline-primary mr-2 mt-2">Submit</button>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
