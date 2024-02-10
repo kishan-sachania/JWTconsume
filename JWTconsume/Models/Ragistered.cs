@@ -9,9 +9,6 @@ namespace JWTconsume.Models
         public string password { get; set; }
         public string email { get; set; }
 
-        public static implicit operator Ragistered(ActionResult<Ragistered> v)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

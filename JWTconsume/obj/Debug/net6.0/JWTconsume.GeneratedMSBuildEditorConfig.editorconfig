@@ -16,6 +16,10 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\Kishan\source\repos\JWTconsume\JWTconsume
 build_property._RazorSourceGeneratorDebug = 
 
+[C:/Users/Kishan/source/repos/JWTconsume/JWTconsume/Views/Demosession/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVtb3Nlc3Npb25cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Kishan/source/repos/JWTconsume/JWTconsume/Views/Home/Home.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxIb21lLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 

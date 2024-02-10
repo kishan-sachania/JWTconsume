@@ -1,4 +1,5 @@
 ﻿using JWTconsume.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -12,6 +13,13 @@ namespace JWTconsume.Controllers
     public class HomeController : Controller
     {
         string baseurl = "https://localhost:7261/api/";
+
+        private readonly IHttpContextAccessor context;
+
+        public HomeController(IHttpContextAccessor httpContextAccessor)
+        {
+            context= httpContextAccessor;
+        }
         public IActionResult Index()
         {
             return View();
@@ -30,7 +38,7 @@ namespace JWTconsume.Controllers
                 client.BaseAddress = new Uri(baseurl);
                 string data = JsonConvert.SerializeObject(Login);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                if (Login?.Username != null && Login?.Password != null)
+                if (Login?.username != null && Login?.password != null)
                 {
                     HttpResponseMessage responseMessage = await client.PostAsync("Login", content);
                     if (responseMessage.IsSuccessStatusCode)
@@ -38,9 +46,16 @@ namespace JWTconsume.Controllers
                         string result = responseMessage.Content.ReadAsStringAsync().Result;
                         Login jsonObject = JsonConvert.DeserializeObject<Login>(result);
                         string token = jsonObject.token.ToString();
-                        
-                        var ragistered = await GetUser(token);
-                        return View("Home", ragistered);
+                        CurrentUser user = new CurrentUser();
+                        user = jsonObject.currentUser;
+                        //var ragistered = await GetUser(token);
+
+                        //save session
+                        string StringUser = JsonConvert.SerializeObject(user);
+                        context.HttpContext.Session.SetString("StringUser", StringUser);
+
+
+                        return RedirectToAction("Index", "Demosession");
                     }
                     else
                     {
