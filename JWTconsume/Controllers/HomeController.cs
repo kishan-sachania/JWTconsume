@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Security.Cryptography.Xml;
 using System.Text;
 
@@ -32,39 +33,65 @@ namespace JWTconsume.Controllers
 
         public async Task<IActionResult> Insert(Login? Login)
         {
+            if (string.IsNullOrEmpty(Login.username))
+            {
+                ModelState.AddModelError("UserName", "Enter Username");
+            }
+            if (string.IsNullOrEmpty(Login.password))
+            {
+                ModelState.AddModelError("Password", "Enter Password");
+            }
+
             using (var client = new HttpClient())
             {
-               
-                client.BaseAddress = new Uri(baseurl);
-                string data = JsonConvert.SerializeObject(Login);
-                StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                if (Login?.username != null && Login?.password != null)
-                {
-                    HttpResponseMessage responseMessage = await client.PostAsync("Login", content);
-                    if (responseMessage.IsSuccessStatusCode)
+                
+
+                    client.BaseAddress = new Uri(baseurl);
+                    string data = JsonConvert.SerializeObject(Login);
+                    StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+                    if (Login?.username != null && Login?.password != null)
                     {
-                        string result = responseMessage.Content.ReadAsStringAsync().Result;
-                        Login jsonObject = JsonConvert.DeserializeObject<Login>(result);
+                        HttpResponseMessage responseMessage = await client.PostAsync("Login", content);
+                        if (responseMessage.IsSuccessStatusCode)
+                        {
+                            string result = responseMessage.Content.ReadAsStringAsync().Result;
+                            Login jsonObject = JsonConvert.DeserializeObject<Login>(result);
+
+                            /*CurrentUser user = new CurrentUser();
+                            user = jsonObject.currentUser;*/
                         string token = jsonObject.token.ToString();
-                        CurrentUser user = new CurrentUser();
-                        user = jsonObject.currentUser;
-                        //var ragistered = await GetUser(token);
+                        if (token != null)
+                        {
+                            var RagisteredUser = await GetUser(token);
+                            
+                            //save session
+                            string StringUser = JsonConvert.SerializeObject(RagisteredUser);
+                            context.HttpContext.Session.SetString("StringUser", StringUser);
 
-                        //save session
-                        string StringUser = JsonConvert.SerializeObject(user);
-                        context.HttpContext.Session.SetString("StringUser", StringUser);
+                            //check user
+                            CurrentUser user = new CurrentUser();
+                            string CurrentUser = context.HttpContext.Session.GetString("StringUser");
+                            user = JsonConvert.DeserializeObject<CurrentUser>(CurrentUser);
+                            if (user != null)
+                            {
+                                return RedirectToAction("Index", "Demosession");
+                            }
+                            else
+                            {
+                                return RedirectToAction("Index");
+                            }
 
-
-                        return RedirectToAction("Index", "Demosession");
+                                
+                        }
+                        else
+                        {
+                            Console.WriteLine("Fill Every Info");
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Error in api");
+                        Console.WriteLine("Error in login");
                     }
-                }
-                else
-                {
-                    Console.WriteLine("Error in login");
                 }
                 return View("Home");
             }
